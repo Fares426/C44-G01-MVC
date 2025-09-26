@@ -1,14 +1,13 @@
 ﻿using Demo.BLL.Services.DataTransferObjects;
-using Demo.DAL.Entities;
 
 namespace Demo.BLL.Services;
 
 public interface IDepartmentService
 {
-    DepartmentDetailsResponse? GetDepartmentById(int id);
-    IEnumerable<DepartmentResponse> GetAllDepartments();
-    int AddDepartment(DepartmentRequest request);
-    int UpdateDepartment(DepartmentUpdateRequest request);
-    bool DeleteDepartment(int id);
+    DepartmentDetailsResponse? GetById(int id);
+    IEnumerable<DepartmentResponse> GetAll();
+    int Add(DepartmentRequest request);
+    int Update(DepartmentUpdateRequest request);
+    bool Delete(int id);
 
 }

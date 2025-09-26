@@ -13,14 +13,25 @@ public class Program
 
         // Add services to the container.
         builder.Services.AddControllersWithViews();
-        builder.Services.AddScoped<IDepartmentService , DepartmentService>();
-        builder.Services.AddScoped<IDepartmentRepository , DepartmentRepository>();
+        builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+        builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+        builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+
+        //builder.Services.AddScoped<IRepository<Department>, BaseRepository<Department>>();
+
+        //builder.Services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
+
+
+
         builder.Services.AddScoped<CompanyDbContext>();
         builder.Services.AddDbContext<CompanyDbContext>(options =>
         {
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             options.UseSqlServer(connectionString);
         });
+
+        builder.Services.AddAutoMapper(typeof(BLL.AssemblyReference).Assembly);
+        builder.Services.AddScoped<IEmployeeService , EmployeeService>();
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.

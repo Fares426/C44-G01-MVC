@@ -1,14 +1,10 @@
-﻿using Azure.Core;
-using Demo.BLL.Services;
+﻿using Demo.BLL.Services;
 using Demo.BLL.Services.DataTransferObjects;
-using Demo.DAL.Entities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Demo.PL.Controllers;
 
-public class DepartmentsController(IDepartmentService departmentService, ILogger<DepartmentsController> logger, IWebHostEnvironment env) : 
+public class DepartmentsController(IDepartmentService departmentService, ILogger<DepartmentsController> logger, IWebHostEnvironment env) :
     Controller
 {
     private IDepartmentService _departmentService = departmentService;
@@ -16,20 +12,20 @@ public class DepartmentsController(IDepartmentService departmentService, ILogger
     [HttpGet]
     public IActionResult Index()
     {
-        var departments = _departmentService.GetAllDepartments();
+        var departments = _departmentService.GetAll();
         return View(departments);
     }
 
 
     [HttpGet]
-    public IActionResult Create() 
-    { 
+    public IActionResult Create()
+    {
         return View();
     }
     [HttpPost]
     public IActionResult Create(DepartmentRequest request)
     {
-        if(!ModelState.IsValid)
+        if (!ModelState.IsValid)
         {
             return View(request);
         }
@@ -37,16 +33,16 @@ public class DepartmentsController(IDepartmentService departmentService, ILogger
 
         try
         {
-            var result = _departmentService.AddDepartment(request);
+            var result = _departmentService.Add(request);
 
-            if(result > 0)
+            if (result > 0)
                 return RedirectToAction("Index");
 
             ModelState.AddModelError(string.Empty, "Something went wrong");
         }
         catch (Exception ex)
         {
-            if(env.IsDevelopment())
+            if (env.IsDevelopment())
                 ModelState.AddModelError(string.Empty, ex.Message);
             else
                 ModelState.AddModelError(string.Empty, "Something went wrong");
@@ -59,7 +55,7 @@ public class DepartmentsController(IDepartmentService departmentService, ILogger
     {
         if (!id.HasValue)
             return BadRequest();
-        var department = _departmentService.GetDepartmentById(id.Value);
+        var department = _departmentService.GetById(id.Value);
         if (department == null)
             return NotFound();
         return View(department);
@@ -70,14 +66,14 @@ public class DepartmentsController(IDepartmentService departmentService, ILogger
     {
         if (!id.HasValue)
             return BadRequest();
-        var department = _departmentService.GetDepartmentById(id.Value);
+        var department = _departmentService.GetById(id.Value);
         if (department == null)
             return NotFound();
         return View(department.ToUpdateRequest());
     }
 
     [HttpPost]
-    public IActionResult Edit([FromRoute] int? id , DepartmentUpdateRequest request)
+    public IActionResult Edit([FromRoute] int? id, DepartmentUpdateRequest request)
     {
         if (!id.HasValue)
             return BadRequest();
@@ -89,7 +85,7 @@ public class DepartmentsController(IDepartmentService departmentService, ILogger
             return View(request);
         try
         {
-            var result = _departmentService.UpdateDepartment(request);
+            var result = _departmentService.Update(request);
             if (result > 0)
                 return RedirectToAction("Index");
             ModelState.AddModelError(string.Empty, "Something went wrong");
@@ -110,7 +106,7 @@ public class DepartmentsController(IDepartmentService departmentService, ILogger
     {
         if (!id.HasValue)
             return BadRequest();
-        var department = _departmentService.GetDepartmentById(id.Value);
+        var department = _departmentService.GetById(id.Value);
         if (department == null)
             return NotFound();
         return View(department);
@@ -121,11 +117,11 @@ public class DepartmentsController(IDepartmentService departmentService, ILogger
     {
         if (!id.HasValue)
             return BadRequest();
-        var department = _departmentService.GetDepartmentById(id.Value);
+        var department = _departmentService.GetById(id.Value);
         try
         {
-            var isDeleted = _departmentService.DeleteDepartment(id.Value);
-            if(isDeleted)
+            var isDeleted = _departmentService.Delete(id.Value);
+            if (isDeleted)
                 return RedirectToAction(nameof(Index));
             ModelState.AddModelError(string.Empty, "Something went wrong");
         }
