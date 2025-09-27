@@ -10,9 +10,9 @@ internal class EmployeeProfile : Profile
         CreateMap<EmployeeRequest, Employee>();
         CreateMap<EmployeeUpdateRequest, Employee>();
 
-        CreateMap<Employee, EmployeeDetailsResponse>();
+        CreateMap<Employee, EmployeeDetailsResponse>().ForMember(d => d.Department, o => o.MapFrom(s => s.Department.Name));
         CreateMap<EmployeeDetailsResponse, EmployeeUpdateRequest>();
-        CreateMap<Employee, EmployeeResponse>();
+        CreateMap<Employee, EmployeeResponse>().ForMember(d => d.Department, o => o.MapFrom(s => s.Department.Name));
         CreateMap<EmployeeUpdateRequest, EmployeeRequest>();
     }
 }

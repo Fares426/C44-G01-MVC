@@ -7,16 +7,14 @@ public class BaseRepository<TEntity>(CompanyDbContext dbContext) : IRepository<T
 {
     protected CompanyDbContext _dbContext = dbContext;
     protected DbSet<TEntity> _dbSet = dbContext.Set<TEntity>();
-    public virtual int Add(TEntity entity)
+    public virtual void Add(TEntity entity)
     {
         _dbSet.Add(entity);
-        return _dbContext.SaveChanges();
     }
 
-    public virtual int Delete(TEntity entity)
+    public virtual void Delete(TEntity entity)
     {
         _dbSet.Remove(entity);
-        return _dbContext.SaveChanges();
     }
 
     public virtual IEnumerable<TEntity> GetAll(bool trackChanges = false)
@@ -29,9 +27,8 @@ public class BaseRepository<TEntity>(CompanyDbContext dbContext) : IRepository<T
         return _dbSet.Find(id);
     }
 
-    public virtual int Update(TEntity entity)
+    public virtual void Update(TEntity entity)
     {
         _dbSet.Update(entity);
-        return _dbContext.SaveChanges();
     }
 }

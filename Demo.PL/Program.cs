@@ -16,9 +16,9 @@ public class Program
         builder.Services.AddScoped<IDepartmentService, DepartmentService>();
         builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
         builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+        builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         //builder.Services.AddScoped<IRepository<Department>, BaseRepository<Department>>();
-
         //builder.Services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
 
 
@@ -31,7 +31,7 @@ public class Program
         });
 
         builder.Services.AddAutoMapper(typeof(BLL.AssemblyReference).Assembly);
-        builder.Services.AddScoped<IEmployeeService , EmployeeService>();
+        builder.Services.AddScoped<IEmployeeService, EmployeeService>();
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.

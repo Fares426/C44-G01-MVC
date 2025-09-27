@@ -1,54 +1,68 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Demo.BLL.Services.DataTransferObjects.Employees;
 using Demo.DAL.Entities;
 using Demo.DAL.Repositories;
 
 namespace Demo.BLL.Services;
 
-public class EmployeeService(IEmployeeRepository employeeRepository, IMapper mapper) : IEmployeeService
+public class EmployeeService(IUnitOfWork unitOfWork, IMapper mapper) : IEmployeeService
 {
     public int Add(EmployeeRequest request)
     {
         //var employee = request.ToEntity();
-        //return employeeRepository.Add(employee);
+        //return unitOfWork.Employees.Add(employee);
         var employee = mapper.Map<EmployeeRequest, Employee>(request);
-        return employeeRepository.Add(employee);
+        unitOfWork.Employees.Add(employee);
+        return unitOfWork.SaveChanges();
     }
 
     public bool Delete(int id)
     {
-        var employee = employeeRepository.GetById(id);
+        var employee = unitOfWork.Employees.GetById(id);
         if (employee == null)
             return false;
-        var result = employeeRepository.Delete(employee);
-        return result > 0;
+        unitOfWork.Employees.Delete(employee);
+        return unitOfWork.SaveChanges() > 0;
     }
 
     public IEnumerable<EmployeeResponse> GetAll()
     {
-        var employees = employeeRepository.GetAll(e => new EmployeeResponse
-        {
-            Age = e.Age,
-            Email = e.Email,
-            EmployeeType = e.EmployeeType.ToString(),
-            Gender = e.Gender.ToString(),
-            Id = e.Id,
-            IsActive = e.IsActive,
-            Name = e.Name,
-            Salary = e.Salary,
-        });
+        //var employees = unitOfWork.Employees.GetAll(e => new EmployeeResponse
+        //{
+        //    Age = e.Age,
+        //    Email = e.Email,
+        //    EmployeeType = e.EmployeeType.ToString(),
+        //    Gender = e.Gender.ToString(),
+        //    Id = e.Id,
+        //    IsActive = e.IsActive,
+        //    Name = e.Name,
+        //    Department = e.Department.Name,
+        //    Salary = e.Salary
+        //});
+        var employees = unitOfWork.Employees.GetAllAsQueryable()
+            .ProjectTo<EmployeeResponse>(mapper.ConfigurationProvider).ToList();
         return employees;
         //return mapper.Map<IEnumerable<EmployeeResponse>>(employees);
     }
 
+    public IEnumerable<EmployeeResponse> GetAll(string searchValue)
+    {
+        var employees = unitOfWork.Employees.GetAllAsQueryable()
+            .Where(e => e.Name.Contains(searchValue))
+            .ProjectTo<EmployeeResponse>(mapper.ConfigurationProvider).ToList();
+        return employees;
+    }
+
     public EmployeeDetailsResponse? GetByID(int id)
     {
-        var employee = employeeRepository.GetById(id);
+        var employee = unitOfWork.Employees.GetById(id);
         return mapper.Map<EmployeeDetailsResponse?>(employee);
     }
 
     public int Update(EmployeeUpdateRequest request)
     {
-        return employeeRepository.Update(mapper.Map<Employee>(request));
+        unitOfWork.Employees.Update(mapper.Map<Employee>(request));
+        return unitOfWork.SaveChanges();
     }
 }

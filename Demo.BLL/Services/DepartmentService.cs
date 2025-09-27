@@ -3,43 +3,39 @@ using Demo.DAL.Repositories;
 
 namespace Demo.BLL.Services;
 
-public class DepartmentService : IDepartmentService
+public class DepartmentService(IUnitOfWork unitOfWork) : IDepartmentService
 {
-    private IDepartmentRepository _departmentRepository;
-
-    public DepartmentService(IDepartmentRepository departmentRepository)
-    {
-        _departmentRepository = departmentRepository;
-    }
 
     public int Add(DepartmentRequest request)
     {
         var department = request.ToEntity();
-        return _departmentRepository.Add(department);
+        unitOfWork.Departments.Add(department);
+        return unitOfWork.SaveChanges();
     }
 
     public bool Delete(int id)
     {
-        var department = _departmentRepository.GetById(id);
+        var department = unitOfWork.Departments.GetById(id);
         if (department == null)
             return false;
-        var result = _departmentRepository.Delete(department);
-        return result > 0;
+        unitOfWork.Departments.Delete(department);
+        return unitOfWork.SaveChanges() > 0;
     }
 
     public IEnumerable<DepartmentResponse> GetAll()
     {
-        var departments = _departmentRepository.GetAll();
+        var departments = unitOfWork.Departments.GetAll();
         return departments.Select(d => d.ToResponse());
     }
 
     public DepartmentDetailsResponse? GetById(int id)
     {
-        return _departmentRepository.GetById(id)?.ToDetailsResponse();
+        return unitOfWork.Departments.GetById(id)?.ToDetailsResponse();
     }
 
     public int Update(DepartmentUpdateRequest request)
     {
-        return _departmentRepository.Update(request.ToEntity());
+        unitOfWork.Departments.Update(request.ToEntity());
+        return unitOfWork.SaveChanges();
     }
 }

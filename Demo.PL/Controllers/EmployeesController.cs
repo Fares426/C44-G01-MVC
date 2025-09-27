@@ -2,27 +2,35 @@
 using Demo.BLL.Services;
 using Demo.BLL.Services.DataTransferObjects.Employees;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Demo.PL.Controllers
 {
     public class EmployeesController(IEmployeeService employeeService, ILogger<EmployeesController> logger, IWebHostEnvironment env
-        , IMapper mapper) :
+        , IMapper mapper, IDepartmentService departmentService) :
     Controller
     {
         private IEmployeeService _employeeService = employeeService;
 
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(string? searchValue)
         {
-            var employees = _employeeService.GetAll();
-            //ViewBag.Message = "Message from Employees Controller Index";
-            return View(employees);
+            //var employees = _employeeService.GetAll();
+            ////ViewBag.Message = "Message from Employees Controller Index";
+            //return View(employees);
+            if (string.IsNullOrWhiteSpace(searchValue))
+                return View(_employeeService.GetAll());
+            return View(_employeeService.GetAll(searchValue));
+
         }
 
 
         [HttpGet]
         public IActionResult Create()
         {
+            var departments = departmentService.GetAll();
+            var selectList = new SelectList(departments, "Id", "Name");
+            ViewBag.Departments = selectList;
             return View();
         }
         [HttpPost]
@@ -74,6 +82,9 @@ namespace Demo.PL.Controllers
             var employee = _employeeService.GetByID(id.Value);
             if (employee == null)
                 return NotFound();
+            var departments = departmentService.GetAll();
+            var selectList = new SelectList(departments, "Id", "Name", employee.DepartmentId);
+            ViewBag.Departments = selectList;
             return View(mapper.Map<EmployeeUpdateRequest>(employee));
         }
 
