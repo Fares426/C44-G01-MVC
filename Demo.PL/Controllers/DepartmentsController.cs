@@ -4,15 +4,15 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Demo.PL.Controllers;
 
-public class DepartmentsController(IDepartmentService departmentService, ILogger<DepartmentsController> logger, IWebHostEnvironment env) :
+public class DepartmentsController(IDepartmentService departmentService, IWebHostEnvironment env) :
     Controller
 {
     private IDepartmentService _departmentService = departmentService;
 
     [HttpGet]
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        var departments = _departmentService.GetAll();
+        var departments = await _departmentService.GetAllAsync();
         return View(departments);
     }
 
@@ -23,7 +23,7 @@ public class DepartmentsController(IDepartmentService departmentService, ILogger
         return View();
     }
     [HttpPost]
-    public IActionResult Create(DepartmentRequest request)
+    public async Task<IActionResult> Create(DepartmentRequest request)
     {
         if (!ModelState.IsValid)
         {
@@ -33,7 +33,7 @@ public class DepartmentsController(IDepartmentService departmentService, ILogger
 
         try
         {
-            var result = _departmentService.Add(request);
+            var result = await _departmentService.AddAsync(request);
 
             if (result > 0)
                 return RedirectToAction("Index");
@@ -51,29 +51,29 @@ public class DepartmentsController(IDepartmentService departmentService, ILogger
     }
 
     [HttpGet]
-    public IActionResult Details(int? id)
+    public async Task<IActionResult> Details(int? id)
     {
         if (!id.HasValue)
             return BadRequest();
-        var department = _departmentService.GetById(id.Value);
+        var department = await _departmentService.GetByIdAsync(id.Value);
         if (department == null)
             return NotFound();
         return View(department);
     }
 
     [HttpGet]
-    public IActionResult Edit(int? id)
+    public async Task<IActionResult> Edit(int? id)
     {
         if (!id.HasValue)
             return BadRequest();
-        var department = _departmentService.GetById(id.Value);
+        var department = await _departmentService.GetByIdAsync(id.Value);
         if (department == null)
             return NotFound();
         return View(department.ToUpdateRequest());
     }
 
     [HttpPost]
-    public IActionResult Edit([FromRoute] int? id, DepartmentUpdateRequest request)
+    public async Task<IActionResult> Edit([FromRoute] int? id, DepartmentUpdateRequest request)
     {
         if (!id.HasValue)
             return BadRequest();
@@ -85,7 +85,7 @@ public class DepartmentsController(IDepartmentService departmentService, ILogger
             return View(request);
         try
         {
-            var result = _departmentService.Update(request);
+            var result = await _departmentService.UpdateAsync(request);
             if (result > 0)
                 return RedirectToAction("Index");
             ModelState.AddModelError(string.Empty, "Something went wrong");
@@ -102,25 +102,25 @@ public class DepartmentsController(IDepartmentService departmentService, ILogger
 
 
     [HttpGet]
-    public IActionResult Delete(int? id)
+    public async Task<IActionResult> Delete(int? id)
     {
         if (!id.HasValue)
             return BadRequest();
-        var department = _departmentService.GetById(id.Value);
+        var department = await _departmentService.GetByIdAsync(id.Value);
         if (department == null)
             return NotFound();
         return View(department);
     }
 
-    [HttpPost, ActionName("Delete")]
-    public IActionResult ConfirmDelete(int? id)
+    [HttpPost, ActionName("DeleteAsync")]
+    public async Task<IActionResult> ConfirmDelete(int? id)
     {
         if (!id.HasValue)
             return BadRequest();
-        var department = _departmentService.GetById(id.Value);
+        var department = await _departmentService.GetByIdAsync(id.Value);
         try
         {
-            var isDeleted = _departmentService.Delete(id.Value);
+            var isDeleted = await _departmentService.DeleteAsync(id.Value);
             if (isDeleted)
                 return RedirectToAction(nameof(Index));
             ModelState.AddModelError(string.Empty, "Something went wrong");

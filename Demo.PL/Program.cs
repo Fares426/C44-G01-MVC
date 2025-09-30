@@ -11,12 +11,13 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Add services to the container.
+        // AddAsync services to the container.
         builder.Services.AddControllersWithViews();
         builder.Services.AddScoped<IDepartmentService, DepartmentService>();
         builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
         builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+        builder.Services.AddScoped<IDocumentService, DocumentService>();
 
         //builder.Services.AddScoped<IRepository<Department>, BaseRepository<Department>>();
         //builder.Services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));

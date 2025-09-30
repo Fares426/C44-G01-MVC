@@ -11,6 +11,11 @@ namespace Demo.DAL.Context.Configurations
                 .IsRequired()
                 .HasMaxLength(50);
 
+            builder.Property(x => x.Image)
+                .HasColumnType("varchar")
+                .IsRequired(false)
+                .HasMaxLength(256);
+
             builder.Property(x => x.Email)
                 .HasColumnType("varchar")
                 .IsRequired(false)
@@ -32,6 +37,8 @@ namespace Demo.DAL.Context.Configurations
 
             builder.Property(x => x.EmployeeType)
                 .HasConversion(x => x.ToString(), s => Enum.Parse<EmployeeType>(s));
+
+
         }
     }
 }

@@ -11,13 +11,13 @@ namespace Demo.DAL.Repositories
             return _dbSet.Where(e => e.Name == name).ToList();
         }
 
-        public IEnumerable<TResult> GetAll<TResult>(Expression<Func<Employee, TResult>> resultSelector,
+        public async Task<IEnumerable<TResult>> GetAllAsync<TResult>(Expression<Func<Employee, TResult>> resultSelector,
             Expression<Func<Employee, bool>>? predicate = null)
         {
             if (predicate is null)
-                return _dbSet.Where(e => !e.IsDeleted).Select(resultSelector).ToList();
+                return await _dbSet.Where(e => !e.IsDeleted).Select(resultSelector).ToListAsync();
 
-            return _dbSet.Where(e => !e.IsDeleted).Where(predicate).Select(resultSelector).ToList();
+            return await _dbSet.Where(e => !e.IsDeleted).Where(predicate).Select(resultSelector).ToListAsync();
         }
 
         public IQueryable<Employee> GetAllAsQueryable()
@@ -25,9 +25,9 @@ namespace Demo.DAL.Repositories
             return _dbSet.Where(e => !e.IsDeleted);
         }
 
-        public override Employee? GetById(int id)
+        public override async Task<Employee?> GetByIdAsync(int id)
         {
-            return _dbSet.Include(e => e.Department).FirstOrDefault(e => e.Id == id);
+            return await _dbSet.Include(e => e.Department).FirstOrDefaultAsync(e => e.Id == id);
         }
     }
 }

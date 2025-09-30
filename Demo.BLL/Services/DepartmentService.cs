@@ -6,36 +6,36 @@ namespace Demo.BLL.Services;
 public class DepartmentService(IUnitOfWork unitOfWork) : IDepartmentService
 {
 
-    public int Add(DepartmentRequest request)
+    public async Task<int> AddAsync(DepartmentRequest request)
     {
         var department = request.ToEntity();
         unitOfWork.Departments.Add(department);
-        return unitOfWork.SaveChanges();
+        return await unitOfWork.SaveChangesAsync();
     }
 
-    public bool Delete(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
-        var department = unitOfWork.Departments.GetById(id);
+        var department = await unitOfWork.Departments.GetByIdAsync(id);
         if (department == null)
             return false;
         unitOfWork.Departments.Delete(department);
-        return unitOfWork.SaveChanges() > 0;
+        return await unitOfWork.SaveChangesAsync() > 0;
     }
 
-    public IEnumerable<DepartmentResponse> GetAll()
+    public async Task<IEnumerable<DepartmentResponse>> GetAllAsync()
     {
-        var departments = unitOfWork.Departments.GetAll();
+        var departments = await unitOfWork.Departments.GetAllAsync();
         return departments.Select(d => d.ToResponse());
     }
 
-    public DepartmentDetailsResponse? GetById(int id)
+    public async Task<DepartmentDetailsResponse?> GetByIdAsync(int id)
     {
-        return unitOfWork.Departments.GetById(id)?.ToDetailsResponse();
+        return (await unitOfWork.Departments.GetByIdAsync(id))?.ToDetailsResponse();
     }
 
-    public int Update(DepartmentUpdateRequest request)
+    public async Task<int> UpdateAsync(DepartmentUpdateRequest request)
     {
         unitOfWork.Departments.Update(request.ToEntity());
-        return unitOfWork.SaveChanges();
+        return await unitOfWork.SaveChangesAsync();
     }
 }

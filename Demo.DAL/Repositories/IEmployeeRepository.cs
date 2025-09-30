@@ -6,6 +6,6 @@ public interface IEmployeeRepository : IRepository<Employee>
 {
     IEnumerable<Employee> GetAll(string name);
     IQueryable<Employee> GetAllAsQueryable();
-    IEnumerable<TResult> GetAll<TResult>(Expression<Func<Employee, TResult>> resultSelector,
+    Task<IEnumerable<TResult>> GetAllAsync<TResult>(Expression<Func<Employee, TResult>> resultSelector,
             Expression<Func<Employee, bool>>? predicate = null);
 }
