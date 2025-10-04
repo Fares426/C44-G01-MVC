@@ -1,6 +1,6 @@
-using System.Diagnostics;
-using Demo.PL.Models;
+using Demo.PL.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace Demo.PL.Controllers
 {

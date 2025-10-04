@@ -1,6 +1,8 @@
 using Demo.BLL.Services;
 using Demo.DAL.Context;
+using Demo.DAL.Entities;
 using Demo.DAL.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Demo.PL;
@@ -18,6 +20,8 @@ public class Program
         builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
         builder.Services.AddScoped<IDocumentService, DocumentService>();
+        builder.Services.AddIdentity<ApplicationsUser, IdentityRole>()
+            .AddEntityFrameworkStores<CompanyDbContext>();
 
         //builder.Services.AddScoped<IRepository<Department>, BaseRepository<Department>>();
         //builder.Services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
@@ -46,7 +50,9 @@ public class Program
         app.UseHttpsRedirection();
         //app.UseRouting();
 
-        //app.UseAuthorization();
+
+        app.UseAuthentication();
+        app.UseAuthorization();
 
         app.MapStaticAssets();
         app.MapControllerRoute(

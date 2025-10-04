@@ -22,6 +22,7 @@ public class DepartmentsController(IDepartmentService departmentService, IWebHos
     {
         return View();
     }
+    [ValidateAntiForgeryToken]
     [HttpPost]
     public async Task<IActionResult> Create(DepartmentRequest request)
     {
