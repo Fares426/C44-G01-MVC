@@ -1,36 +1,65 @@
-namespace Demo.PL
+using Demo.BLL.Services;
+using Demo.DAL.Context;
+using Demo.DAL.Entities;
+using Demo.DAL.Repositories;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
+namespace Demo.PL;
+
+public class Program
 {
-    public class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
+        var builder = WebApplication.CreateBuilder(args);
+
+        // AddAsync services to the container.
+        builder.Services.AddControllersWithViews();
+        builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+        builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+        builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+        builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+        builder.Services.AddScoped<IDocumentService, DocumentService>();
+        builder.Services.AddIdentity<ApplicationsUser, IdentityRole>()
+            .AddEntityFrameworkStores<CompanyDbContext>();
+
+        //builder.Services.AddScoped<IRepository<Department>, BaseRepository<Department>>();
+        //builder.Services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
+
+
+
+        builder.Services.AddScoped<CompanyDbContext>();
+        builder.Services.AddDbContext<CompanyDbContext>(options =>
         {
-            var builder = WebApplication.CreateBuilder(args);
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            options.UseSqlServer(connectionString);
+        });
 
-            // Add services to the container.
-            builder.Services.AddControllersWithViews();
+        builder.Services.AddAutoMapper(typeof(BLL.AssemblyReference).Assembly);
+        builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+        var app = builder.Build();
 
-            var app = builder.Build();
-
-            // Configure the HTTP request pipeline.
-            if (!app.Environment.IsDevelopment())
-            {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
-
-            app.UseHttpsRedirection();
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.MapStaticAssets();
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}")
-                .WithStaticAssets();
-
-            app.Run();
+        // Configure the HTTP request pipeline.
+        if (!app.Environment.IsDevelopment())
+        {
+            app.UseExceptionHandler("/Home/Error");
+            // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+            app.UseHsts();
         }
+
+        app.UseHttpsRedirection();
+        //app.UseRouting();
+
+
+        app.UseAuthentication();
+        app.UseAuthorization();
+
+        app.MapStaticAssets();
+        app.MapControllerRoute(
+            name: "default",
+            pattern: "{controller=Home}/{action=Index}/{id?}")
+            .WithStaticAssets();
+
+        app.Run();
     }
 }
